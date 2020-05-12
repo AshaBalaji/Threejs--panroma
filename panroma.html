@@ -12,10 +12,19 @@
  
     <div id="container"></div>
 		<div id="info">
-			<a href="https://threejs.org" target="_blank">three.js webgl</a> <br />
+      <a href="https://threejs.org" target="_blank">three.js webgl</a> <br />
+      <button onclick="toggleWaypoint()">Toggle Waypoint</button>
 			
 		</div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js"></script>
+        
+        <script src="https://unpkg.com/three@0.115.0/examples/js/libs/inflate.min.js"></script>
+
+        <script src="loaders/Orbitcontrols.js"></script> 
+        <script src="loaders/FBXLoader.js"></script>
+        <script src="loaders/MTLloaders.js"></script>
+        <script src="loaders/ObjLoader.js"></script>
         <script src="panroma.js"></script>
+      
 </body>
 </html>

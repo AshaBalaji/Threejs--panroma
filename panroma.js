@@ -1,7 +1,7 @@
 
 
 
-var camera, scene, renderer;
+var camera, scene, renderer,panorama, raycaster, mouse,group,loader,controls;
 
 var isUserInteracting = false,
 onMouseDownMouseX = 0, onMouseDownMouseY = 0,
@@ -14,11 +14,13 @@ animate();
 
 function init() {
 
+    
+
     var container, mesh;
 
     container = document.getElementById( 'container' );
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+    camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 1, 110000 );
     camera.target = new THREE.Vector3( 0, 0, 0 );
 
     scene = new THREE.Scene();
@@ -31,20 +33,81 @@ function init() {
     } );
 
     mesh = new THREE.Mesh( geometry, material );
-
     scene.add( mesh );
+ 
+
+//     var geometry1 = new THREE.SphereGeometry( 500, 60, 40 );
+//     geometry1.scale( - 1, 1, 1 );
+
+
+//      var material2 = new THREE.MeshBasicMaterial( {
+//         map: new THREE.TextureLoader().load( 'https://z-axonweb.imgix.net/b0c1b918dd409348a2468b11c7f0eddc7b14deab/Front_View-2.jpg' )
+//  } );
+
+//     mesh1= new THREE.Mesh( geometry1, material2 );
+//    scene.add( mesh1 );
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( renderer.domElement );
 
-    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+   
+
+       loader = new THREE.FBXLoader();
+        console.log(loader);
+        loader.load( 'Georgetown_Interior_nofur.fbx', function ( object ) {
+        model = object;
+        console.log(model);
+        scene.add( model );
+        }); 
+
+  
+     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
     document.addEventListener( 'mouseup', onDocumentMouseUp, false );
     document.addEventListener( 'wheel', onDocumentMouseWheel, false );
 
-    //
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.enableZoom=true;
+    // controls.target.set( 0, 0, 100);
+    // loader = new THREE.FBXLoader();
+    // console.log(loader);
+    // loader.load( 'Georgetown_Interior_nofur.fbx', function ( object ) {
+    // model = object;
+    // console.log(model);
+    // scene.add( model );
+    // }); 
+    // camera.position.z=3;
+    controls.update();
+
+   
+    // hotspot
+
+    var geometryPoint = new THREE.BoxBufferGeometry( 1, 1, 1 );
+    var materialPoint = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    
+    // var cubeA = new THREE.Mesh( geometryPoint, materialPoint );
+    // cubeA.position.set( 100, 100, 0 );
+    
+    var cubeB = new THREE.Mesh( geometryPoint, materialPoint );
+    cubeB.position.set( -30, 0, -40 );
+    
+    //create a group and add the two cubes
+    //These cubes can now be rotated / scaled etc as a group
+     group = new THREE.Group();
+    // group.add( cubeA );
+    group.add( cubeB );
+    
+    scene.add( group );
+
+    cubeB.callback = function() {
+        console.log("click cube!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    }
+
+    raycaster = new THREE.Raycaster()
+    mouse = new THREE.Vector2();
+
 
     document.addEventListener( 'dragover', function ( event ) {
 
@@ -109,6 +172,18 @@ function onDocumentMouseDown( event ) {
     onPointerDownLon = lon;
     onPointerDownLat = lat;
 
+    mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 -1;
+    mouse.y = -( event.clientY / renderer.domElement.clientHeight ) *2 +1;
+
+    raycaster.setFromCamera( mouse, camera )
+
+//    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000));
+
+    var intersects = raycaster.intersectObjects(group.children,true)
+    if( intersects.length > 0 ) {
+        intersects[0].object.callback()
+    }
+
 }
 
 function onDocumentMouseMove( event ) {
@@ -142,11 +217,31 @@ function animate() {
 
 }
 
+// // window.addEventListener('mousemove', onMouseMove, false);
+// //   createHotspot.addEventListener('click', onClick, false);
+
+// //   function onClick(event){
+//     direction = material.clone().sub(to);
+//     arrowHelper.add(new THREE.ArrowHelper(direction.normalize(), material, 1, 0xff0000));
+
+// //  }
+
+// function toggleWaypoint(){
+    
+
+// `mesh.material=material2;
+// }
+
+
+
 function update() {
+
+
+    // group.rotation.x+=0.5;
 
     if ( isUserInteracting === false ) {
 
-        lon += 0.1;
+        // lon += 0.1;
 
     }
 
