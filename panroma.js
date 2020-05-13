@@ -1,7 +1,9 @@
 
 
 
-var camera, scene, renderer,panorama, raycaster, mouse,group,loader,controls;
+var camera, scene, renderer,panorama, raycaster, mouse,group,controls,geometry,material,cube;
+var ADD = 0.05;
+var isMouseDown = true;
 
 var isUserInteracting = false,
 onMouseDownMouseX = 0, onMouseDownMouseY = 0,
@@ -22,6 +24,9 @@ function init() {
 
     camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 1, 110000 );
     camera.target = new THREE.Vector3( 0, 0, 0 );
+    camera.position.x = 5;
+    camera.position.y = 50;
+    camera.position.z = 80;
 
     scene = new THREE.Scene();
 
@@ -34,6 +39,10 @@ function init() {
 
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
+
+
+   
+
  
 
 //     var geometry1 = new THREE.SphereGeometry( 500, 60, 40 );
@@ -52,16 +61,6 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( renderer.domElement );
 
-   
-
-       loader = new THREE.FBXLoader();
-        console.log(loader);
-        loader.load( 'Georgetown_Interior_nofur.fbx', function ( object ) {
-        model = object;
-        console.log(model);
-        scene.add( model );
-        }); 
-
   
      document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -69,17 +68,15 @@ function init() {
     document.addEventListener( 'wheel', onDocumentMouseWheel, false );
 
     controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.enableZoom=true;
-    // controls.target.set( 0, 0, 100);
-    // loader = new THREE.FBXLoader();
-    // console.log(loader);
-    // loader.load( 'Georgetown_Interior_nofur.fbx', function ( object ) {
-    // model = object;
-    // console.log(model);
-    // scene.add( model );
-    // }); 
-    // camera.position.z=3;
-    controls.update();
+    controls.enableZoom = true;
+    geometry = new THREE.BoxGeometry(1,1,1);
+    material = new THREE.MeshBasicMaterial({color: 0xff0000});
+   cube = new THREE.Mesh(geometry,material);
+   scene.add(cube);
+  cube.position.z = -6;
+  cube.rotation.x = 10;
+  cube.rotation.y = 5;
+  controls.update();
 
    
     // hotspot
@@ -163,7 +160,6 @@ function onWindowResize() {
 function onDocumentMouseDown( event ) {
 
     event.preventDefault();
-
     isUserInteracting = true;
 
     onPointerDownPointerX = event.clientX;
@@ -183,6 +179,8 @@ function onDocumentMouseDown( event ) {
     if( intersects.length > 0 ) {
         intersects[0].object.callback()
     }
+    
+    isMouseDown = !isMouseDown;
 
 }
 
@@ -236,8 +234,11 @@ function animate() {
 
 function update() {
 
-
-    // group.rotation.x+=0.5;
+    if(isMouseDown) {
+        cube.rotation.y +=0.1;
+    } else {
+        cube.rotation.y = 0;
+    }
 
     if ( isUserInteracting === false ) {
 
@@ -253,7 +254,12 @@ function update() {
     camera.target.y = 500 * Math.cos( phi );
     camera.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
 
+    
+
+
     camera.lookAt( camera.target );
+
+   
 
     /*
     // distortion
