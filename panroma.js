@@ -4,7 +4,7 @@
 var camera, scene, renderer,panorama, raycaster, mouse,group,controls,geometry,material,cube;
 var ADD = 0.05;
 var isMouseDown = true;
-
+var cubeB;
 var isUserInteracting = false,
 onMouseDownMouseX = 0, onMouseDownMouseY = 0,
 lon = 0, onMouseDownLon = 0,
@@ -27,6 +27,7 @@ function init() {
     camera.position.x = 5;
     camera.position.y = 50;
     camera.position.z = 80;
+    
 
     scene = new THREE.Scene();
 
@@ -69,14 +70,16 @@ function init() {
 
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.enableZoom = true;
+    controls.autoRotate = true;
     geometry = new THREE.BoxGeometry(1,1,1);
     material = new THREE.MeshBasicMaterial({color: 0xff0000});
    cube = new THREE.Mesh(geometry,material);
    scene.add(cube);
-  cube.position.z = -6;
+   
+  cube.position.z = 6;
   cube.rotation.x = 10;
   cube.rotation.y = 5;
-  controls.update();
+//  controls.update();
 
    
     // hotspot
@@ -161,6 +164,7 @@ function onDocumentMouseDown( event ) {
 
     event.preventDefault();
     isUserInteracting = true;
+    
 
     onPointerDownPointerX = event.clientX;
     onPointerDownPointerY = event.clientY;
@@ -172,6 +176,7 @@ function onDocumentMouseDown( event ) {
     mouse.y = -( event.clientY / renderer.domElement.clientHeight ) *2 +1;
 
     raycaster.setFromCamera( mouse, camera )
+    
 
 //    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000));
 
@@ -179,6 +184,9 @@ function onDocumentMouseDown( event ) {
     if( intersects.length > 0 ) {
         intersects[0].object.callback()
     }
+
+    // camera.traget=cube.position;
+    // console.log(cube.position);
     
     isMouseDown = !isMouseDown;
 
@@ -211,7 +219,8 @@ function onDocumentMouseWheel( event ) {
 function animate() {
 
     requestAnimationFrame( animate );
-    update();
+    
+   update();
 
 }
 
@@ -240,9 +249,10 @@ function update() {
         cube.rotation.y = 0;
     }
 
+
     if ( isUserInteracting === false ) {
 
-        // lon += 0.1;
+         lon += 0.6;
 
     }
 
@@ -252,11 +262,9 @@ function update() {
 
     camera.target.x = 500 * Math.sin( phi ) * Math.cos( theta );
     camera.target.y = 500 * Math.cos( phi );
-    camera.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
+    camera.target.z = 500 * Math.sin( theta );
 
-    
-
-
+    //camera.lookAt(cube.position);
     camera.lookAt( camera.target );
 
    
